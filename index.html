@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Tanisha’s Love Quiz 💖</title>
+<style>
+body {
+    margin: 0;
+    font-family: 'Segoe UI', sans-serif;
+    background: linear-gradient(135deg, #ffd6e8, #fffacd);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+    overflow: hidden;
+}
+
+.quiz-container {
+    background: white;
+    width: 90%;
+    max-width: 600px;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 15px 40px rgba(128,0,32,0.2);
+    text-align: center;
+    animation: fadeIn 1s ease;
+}
+
+h2 {
+    color: #800020;
+}
+
+button {
+    background: #ffd6e8;
+    border: none;
+    padding: 12px;
+    margin: 8px 0;
+    width: 100%;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.3s;
+    font-weight: bold;
+}
+
+button:hover {
+    background: #fffacd;
+    transform: scale(1.05);
+}
+
+.progress {
+    height: 8px;
+    background: #eee;
+    border-radius: 10px;
+    margin-bottom: 15px;
+}
+
+.progress-bar {
+    height: 100%;
+    width: 0%;
+    background: #800020;
+    border-radius: 10px;
+    transition: width 0.3s;
+}
+
+.timer, .streak {
+    font-size: 14px;
+    margin: 5px;
+    color: #800020;
+}
+
+.shake {
+    animation: shake 0.4s;
+}
+
+@keyframes shake {
+    0% { transform: translateX(0); }
+    25% { transform: translateX(-5px); }
+    50% { transform: translateX(5px); }
+    75% { transform: translateX(-5px); }
+    100% { transform: translateX(0); }
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.surprise-btn {
+    background: #800020;
+    color: white;
+}
+</style>
+</head>
+<body>
+
+<div class="quiz-container">
+    <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
+    <div class="timer">⏳ Time Left: <span id="time">10</span>s</div>
+    <div class="streak">🔥 Streak: <span id="streak">0</span></div>
+    <h2 id="question">Question text</h2>
+    <div id="options"></div>
+</div>
+
+<script>
+const questions = [
+{
+q: "What are you to me?",
+options: [
+{text:"Just a girl"},
+{text:"My best friend"},
+{text:"My peace", correct:true},
+{text:"My everything"}
+]
+},
+{
+q: "Who fell first?",
+options: [
+{text:"Me", correct:true},
+{text:"You"},
+{text:"Both"},
+{text:"Still deciding"}
+]
+},
+// ADD REMAINING QUESTIONS SAME FORMAT
+];
+
+let current = 0;
+let score = 0;
+let streak = 0;
+let timer;
+let timeLeft = 10;
+
+function startTimer(){
+    timeLeft = 10;
+    document.getElementById("time").innerText = timeLeft;
+    timer = setInterval(()=>{
+        timeLeft--;
+        document.getElementById("time").innerText = timeLeft;
+        if(timeLeft <= 0){
+            clearInterval(timer);
+            nextQuestion();
+        }
+    },1000);
+}
+
+function loadQuestion(){
+    clearInterval(timer);
+    startTimer();
+
+    const q = questions[current];
+    document.getElementById("question").innerText = q.q;
+    const optionsDiv = document.getElementById("options");
+    optionsDiv.innerHTML = "";
+
+    document.getElementById("progressBar").style.width = 
+        ((current)/questions.length)*100 + "%";
+
+    q.options.forEach(option=>{
+        const btn = document.createElement("button");
+        btn.innerText = option.text;
+        btn.onclick = ()=>{
+            if(option.correct){
+                score++;
+                streak++;
+                document.getElementById("streak").innerText = streak;
+                nextQuestion();
+            } else {
+                streak = 0;
+                document.getElementById("streak").innerText = streak;
+                btn.classList.add("shake");
+                btn.innerText = "ARE YOU SURE? 😭";
+            }
+        }
+        optionsDiv.appendChild(btn);
+    });
+}
+
+function nextQuestion(){
+    current++;
+    if(current < questions.length){
+        loadQuestion();
+    } else {
+        showResult();
+    }
+}
+
+function showResult(){
+    document.querySelector(".quiz-container").innerHTML =
+    `<h2>Final Score: ${score}/${questions.length}</h2>
+    <p>${score >= 20 ? "You know us too well... suspicious 😭❤️" : "Revision needed but I still love you."}</p>
+    <button class="surprise-btn" onclick="surprise()">Click for your surprise 💌</button>`;
+}
+
+function surprise(){
+    document.querySelector(".quiz-container").innerHTML =
+    `<h2>💌 Secret Message</h2>
+    <p>No matter what you scored... you're my peace, my chaos, my favorite person in this world.</p>
+    <p>Forever isn't enough with you.</p>`;
+}
+
+loadQuestion();
+</script>
+
+</body>
+</html>
