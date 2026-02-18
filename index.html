@@ -1,7 +1,8 @@
 <!DOCTYPE html>
 <html>
 <head>
-<title>Tanisha’s Love Quiz 💖</title>
+<title>Tanisha’s Love Trial 💖</title>
+
 <style>
 body {
     margin: 0;
@@ -12,22 +13,43 @@ body {
     align-items: center;
     height: 100vh;
     overflow: hidden;
+    cursor: url('https://cur.cursors-4u.net/hearts/hea-1/hea47.cur'), auto;
+    transition: background 2s ease;
 }
 
+/* Floating Hearts */
+.heart {
+    position: absolute;
+    color: #ff9eb5;
+    animation: floatUp 6s linear infinite;
+    opacity: 0.7;
+}
+
+@keyframes floatUp {
+    0% { transform: translateY(100vh); opacity:0; }
+    50% { opacity:1; }
+    100% { transform: translateY(-10vh); opacity:0; }
+}
+
+/* Quiz Box */
 .quiz-container {
     background: white;
     width: 90%;
-    max-width: 600px;
+    max-width: 650px;
     padding: 30px;
     border-radius: 20px;
     box-shadow: 0 15px 40px rgba(128,0,32,0.2);
     text-align: center;
     animation: fadeIn 1s ease;
+    transition: 0.5s;
+    position: relative;
 }
 
-h2 {
-    color: #800020;
+.wine-glow {
+    box-shadow: 0 0 50px #800020;
 }
+
+h2 { color: #800020; }
 
 button {
     background: #ffd6e8;
@@ -67,15 +89,13 @@ button:hover {
     color: #800020;
 }
 
-.shake {
-    animation: shake 0.4s;
-}
+.shake { animation: shake 0.4s; }
 
 @keyframes shake {
     0% { transform: translateX(0); }
-    25% { transform: translateX(-5px); }
-    50% { transform: translateX(5px); }
-    75% { transform: translateX(-5px); }
+    25% { transform: translateX(-6px); }
+    50% { transform: translateX(6px); }
+    75% { transform: translateX(-6px); }
     100% { transform: translateX(0); }
 }
 
@@ -84,120 +104,476 @@ button:hover {
     to { opacity: 1; }
 }
 
-.surprise-btn {
-    background: #800020;
-    color: white;
+/* Love letter typing */
+#letter {
+    white-space: pre-wrap;
+    text-align: left;
+    font-size: 15px;
+    line-height: 1.6;
+}
+
+/* Dodging Button */
+#loveMore {
+    position: absolute;
+    width: 160px;
 }
 </style>
 </head>
+
 <body>
 
-<div class="quiz-container">
+<div class="quiz-container" id="quizBox">
     <div class="progress"><div class="progress-bar" id="progressBar"></div></div>
     <div class="timer">⏳ Time Left: <span id="time">10</span>s</div>
     <div class="streak">🔥 Streak: <span id="streak">0</span></div>
-    <h2 id="question">Question text</h2>
+    <h2 id="question"></h2>
     <div id="options"></div>
 </div>
 
 <script>
-const questions = [
+
+/* Floating hearts */
+setInterval(()=>{
+    const heart=document.createElement("div");
+    heart.classList.add("heart");
+    heart.innerText="💗";
+    heart.style.left=Math.random()*100+"vw";
+    heart.style.fontSize=(15+Math.random()*20)+"px";
+    document.body.appendChild(heart);
+    setTimeout(()=>heart.remove(),6000);
+},700);
+
+const questions=[
 {
-q: "What are you to me?",
-options: [
+q:"What are you to me?",
+options:[
 {text:"Just a girl"},
 {text:"My best friend"},
-{text:"My peace", correct:true},
-{text:"My everything"}
+{text:"My everything", correct:true},
+{text:"My peace"}
 ]
 },
 {
-q: "Who fell first?",
-options: [
+q:"Who fell first?",
+options:[
 {text:"Me", correct:true},
 {text:"You"},
 {text:"Both"},
 {text:"Still deciding"}
 ]
 },
-// ADD REMAINING QUESTIONS SAME FORMAT
+{
+q:"What scares me most?",
+options:[
+{text:"Losing you", correct:true},
+{text:"you"},
+{text:"Exams"},
+{text:"Nothing"}
+]
+},
+{
+q:"Whats our fav memory?",
+options:[
+{text:"when we met"},
+{text:"our first fight"},
+{text:"our first kiss", correct:true},
+{text:"our first call"}
+]
+},
+
+{
+q:"Who tangs more?",
+options:[
+{text:"Me", correct:true},
+{text:"You"},
+{text:"Both at the same time"},
+{text:"Still debating"}
+]
+},
+
+{
+q:"Whats my love language?",
+options:[
+{text:"words"},
+{text:"all of em", correct:true},
+{text:"actions"},
+{text:"physical touch"}
+]
+},
+
+{
+q:"What’s my favorite thing about you?",
+options:[
+{text:"everything abt you", correct:true},
+{text:"Your smile"},
+{text:"Your body"},
+{text:"Your eyes"}
+]
+},
+
+{
+q:"When you’re sad, what do I try to do?",
+options:[
+{text:"Ignore you"},
+{text:"Tease you"},
+{text:"Comfort you and love you", correct:true},
+{text:"Change topic"}
+]
+},
+
+{
+q:"What’s something we always argue about?",
+options:[
+{text:"we be dramatic", correct:true},
+{text:"late replies"},
+{text:"jealousy"},
+{text:"Nothing ever"}
+]
+},
+
+{
+q:"If we could travel anywhere together, I’d choose:",
+options:[
+{text:"Paris"},
+{text:"Netherlands"},
+{text:"Maldives"},
+{text:"Anywhere as long as it's with you", correct:true}
+]
+},
+
+{
+q:"What’s your love language?",
+options:[
+{text:"Words"},
+{text:"Attention"},
+{text:"Physical affection"},
+{text:"bully", correct:true}
+]
+},
+
+{
+q:"What do I overthink the most?",
+options:[
+{text:"studies"},
+{text:"Future"},
+{text:"Us", correct:true},
+{text:"Random things"}
+]
+},
+
+{
+q:"Who loves more?",
+options:[
+{text:"Me", correct:true},
+{text:"You"},
+{text:"Both together"},
+{text:"No one"}
+]
+},
+
+{
+q:"What’s my biggest dream with you?",
+options:[
+{text:"fullfill all your desires", correct:true},
+{text:"complete our goals"},
+{text:"get rich"},
+{text:"Move abroad together"}
+]
+},
+
+{
+q:"What’s our relationship vibe?",
+options:[
+{text:"Toxic love"},
+{text:"pure love", correct:true},
+{text:"Serious love"},
+{text:"chaotic love"}
+]
+},
+
+{
+q:"What’s something only we understand?",
+options:[
+{text:"Eachother", correct:true},
+{text:"gossip"},
+{text:"our jokes"},
+{text:"everything"}
+]
+},
+
+{
+q:"When you don’t reply for long, I:",
+options:[
+{text:"Stay calm"},
+{text:"Forget about it"},
+{text:"Overthink everything", correct:true},
+{text:"spam"}
+]
+},
+
+{
+q:"What’s my favorite notification?",
+options:[
+{text:"youtube"},
+{text:"Games"},
+{text:"Your message", correct:true},
+{text:"money notifications"}
+]
+},
+
+{
+q:"If we fight, what happens eventually?",
+options:[
+{text:"We ignore each other"},
+{text:"We fix it and talk", correct:true},
+{text:"We block each other"},
+{text:"We forget it"}
+]
+},
+
+{
+q:"What do I secretly love the most?",
+options:[
+{text:"Your whole face", correct:true},
+{text:"Your eyes"},
+{text:"Your lips"},
+{text:"Your body"}
+]
+},
+
+{
+q:"What’s our biggest strength?",
+options:[
+{text:"Communication"},
+{text:"Our love", correct:true},
+{text:"Distance"},
+{text:"Loyalty"}
+]
+},
+
+{
+q:"What do I always want from you?",
+options:[
+{text:"Hotwheels"},
+{text:"Gifts"},
+{text:"Honesty and love", correct:true},
+{text:"Nothing"}
+]
+},
+
+{
+q:"What are we building together?",
+options:[
+{text:"Drama"},
+{text:"Our future", correct:true},
+{text:"House"},
+{text:"Memories"}
+]
+},
+
+{
+q:"If I had to choose again, I would:",
+options:[
+{text:"Think about it"},
+{text:"Choose you again", correct:true},
+{text:"Stay single"},
+{text:"Run away"}
+]
+},
+
+{
+q:"What makes our bond different?",
+options:[
+{text:"Understanding", correct:true},
+{text:"Distance"},
+{text:"Trust"},
+{text:"Purity"}
+]
+},
+
+{
+q:"What’s something I never want to lose?",
+options:[
+{text:"My goals"},
+{text:"My life"},
+{text:"Us", correct:true},
+{text:"you"}
+]
+},
+
+{
+q:"What’s my favorite version of you?",
+options:[
+{text:"Horny you", correct:true},
+{text:"Sleepy you"},
+{text:"Angry you"},
+{text:"Happy you"}
+]
+},
+
+{
+q:"Final Question — What are we?",
+options:[
+{text:"Serious"},
+{text:"Destiny"},
+{text:"Forever", correct:true},
+{text:"Commited"}
+]
+}
+
 ];
 
-let current = 0;
-let score = 0;
-let streak = 0;
-let timer;
-let timeLeft = 10;
+let current=0,score=0,streak=0,timer,timeLeft=10;
 
 function startTimer(){
-    timeLeft = 10;
-    document.getElementById("time").innerText = timeLeft;
-    timer = setInterval(()=>{
-        timeLeft--;
-        document.getElementById("time").innerText = timeLeft;
-        if(timeLeft <= 0){
-            clearInterval(timer);
-            nextQuestion();
-        }
-    },1000);
+timeLeft=20;
+document.getElementById("time").innerText=timeLeft;
+timer=setInterval(()=>{
+timeLeft--;
+document.getElementById("time").innerText=timeLeft;
+if(timeLeft<=0){
+clearInterval(timer);
+nextQuestion();
+}
+},1000);
 }
 
 function loadQuestion(){
-    clearInterval(timer);
-    startTimer();
+clearInterval(timer);
+startTimer();
+const q=questions[current];
+document.getElementById("question").innerText=q.q;
+const optionsDiv=document.getElementById("options");
+optionsDiv.innerHTML="";
+document.getElementById("progressBar").style.width=((current + 1)/questions.length)*100+"%";
 
-    const q = questions[current];
-    document.getElementById("question").innerText = q.q;
-    const optionsDiv = document.getElementById("options");
-    optionsDiv.innerHTML = "";
-
-    document.getElementById("progressBar").style.width = 
-        ((current)/questions.length)*100 + "%";
-
-    q.options.forEach(option=>{
-        const btn = document.createElement("button");
-        btn.innerText = option.text;
-        btn.onclick = ()=>{
-            if(option.correct){
-                score++;
-                streak++;
-                document.getElementById("streak").innerText = streak;
-                nextQuestion();
-            } else {
-                streak = 0;
-                document.getElementById("streak").innerText = streak;
-                btn.classList.add("shake");
-                btn.innerText = "ARE YOU SURE? 😭";
-            }
-        }
-        optionsDiv.appendChild(btn);
-    });
+q.options.forEach(option=>{
+const btn=document.createElement("button");
+btn.innerText=option.text;
+btn.onclick=()=>{
+if(option.correct){
+score++;
+streak++;
+if(streak>=5){
+document.getElementById("quizBox").classList.add("wine-glow");
+}
+document.getElementById("streak").innerText=streak;
+nextQuestion();
+}else{
+streak=0;
+document.getElementById("quizBox").classList.remove("wine-glow");
+document.getElementById("streak").innerText=streak;
+btn.classList.add("shake");
+btn.innerText="ARE YOU SURE?";
+}
+};
+optionsDiv.appendChild(btn);
+});
 }
 
 function nextQuestion(){
-    current++;
-    if(current < questions.length){
-        loadQuestion();
-    } else {
-        showResult();
-    }
+current++;
+if(current<questions.length){
+loadQuestion();
+}else{
+showResult();
+}
 }
 
 function showResult(){
-    document.querySelector(".quiz-container").innerHTML =
-    `<h2>Final Score: ${score}/${questions.length}</h2>
-    <p>${score >= 20 ? "You know us too well... suspicious 😭❤️" : "Revision needed but I still love you."}</p>
-    <button class="surprise-btn" onclick="surprise()">Click for your surprise 💌</button>`;
+const box=document.getElementById("quizBox");
+
+if(score === questions.length){
+box.innerHTML=`
+<h2>${score}/${questions.length}?! 😳</h2>
+<p>You don’t just know us… you ARE us.</p>
+<button onclick="surprise()">Unlock Forever 💌</button>`;
+}
+else if(score<10){
+box.innerHTML=`<h2>You Failed 😤</h2>`;
+setTimeout(()=>{
+box.innerHTML=`
+<h2>Just kidding ❤️</h2>
+<button onclick="surprise()">Click for your surprise 💌</button>`;
+},2500);
+}
+else{
+box.innerHTML=`
+<h2>${score}/${questions.length}</h2>
+<button onclick="surprise()">Click for your surprise 💌</button>`;
+}
 }
 
 function surprise(){
-    document.querySelector(".quiz-container").innerHTML =
-    `<h2>💌 Secret Message</h2>
-    <p>No matter what you scored... you're my peace, my chaos, my favorite person in this world.</p>
-    <p>Forever isn't enough with you.</p>`;
+document.body.style.background="linear-gradient(135deg, #800020, #400010)";
+const box=document.getElementById("quizBox");
+box.innerHTML=`
+<h2 style="color:white;">💌 To Tanisha</h2>
+<div id="letter" style="color:white;"></div>
+<button id="loveMore">I love you more 😌</button>
+`;
+
+typeLetter();
+dodgingButton();
+}
+
+/* Typing effect */
+function typeLetter(){
+const text=`If you’re reading this, it means you stayed.
+Through every question.
+Through every memory.
+Through every little chaotic piece of us.
+
+You are my peace and my storm.
+My comfort and my challenge.
+My favorite notification.
+My safest place.
+
+We fight.
+We overthink.
+We tease.
+We annoy each other.
+But at the end of everything —
+it’s still you.
+
+I don’t love you in a small way.
+I love you in a forever way.
+In a “choose you again and again” way.
+In a way that doesn’t fade when things get hard.
+
+You are not just part of my life.
+You are the part that makes it meaningful.
+
+And no quiz score could ever measure that.
+
+Forever isn’t enough with you.
+But it’s a good place to start I Love You Tanisha Wallahi. ❤️`;
+
+let i=0;
+function typing(){
+if(i<text.length){
+document.getElementById("letter").innerHTML+=text.charAt(i);
+i++;
+setTimeout(typing,25);
+}
+}
+typing();
+}
+
+/* Dodging button */
+function dodgingButton(){
+const btn=document.getElementById("loveMore");
+btn.onmouseover=()=>{
+btn.style.top=Math.random()*80+"%";
+btn.style.left=Math.random()*80+"%";
+};
+btn.onclick=()=>{
+btn.innerText="Okay fine… you win ❤️";
+};
 }
 
 loadQuestion();
+
 </script>
 
 </body>
